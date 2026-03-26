@@ -39,7 +39,7 @@ export function Footer() {
               
               <li className="flex items-center gap-2">
                 
-                <span className="font-medium text-slate-200">{t('contact.owner')}:</span><img src="src/images/falshmessage.png" alt="" className="w-10 h-10 mt-0.5" />Flash Message Company
+                <span className="font-medium text-slate-200">{t('contact.owner')}:</span><img src="/images/falshmessage.png" alt="" className="w-10 h-10 mt-0.5" />Flash Message Company
               </li>
               <li className="flex items-start gap-2">
                 <MapPin className="w-4 h-4 mt-0.5 text-slate-400 shrink-0" />
