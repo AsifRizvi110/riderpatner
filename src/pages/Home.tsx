@@ -39,9 +39,9 @@ export function Home() {
           <div className="absolute inset-0 bg-linear-to-tr from-slate-900 via-slate-800/80 to-transparent z-10" />
 
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 h-full w-full gap-1 p-1">
-            <img src="src/images/track.jpeg" className="w-full h-full object-cover rounded-xl" />
-            <img src="src/images/driver.jpg" className="hidden sm:block w-full h-full object-cover rounded-xl" />
-            <img src="src/images/rider1.jpg" className="w-full h-full object-cover rounded-xl" />
+            <img src="/images/track.jpeg" className="w-full h-full object-cover rounded-xl" />
+            <img src="/images/driver.jpg" className="hidden sm:block w-full h-full object-cover rounded-xl" />
+            <img src="/images/rider1.jpg" className="w-full h-full object-cover rounded-xl" />
           </div>
         </div>
 
@@ -171,7 +171,7 @@ export function Home() {
             </div>
 
             <div>
-              <img src="src/images/car.jpg" className="rounded-2xl w-full object-cover aspect-4/3" />
+              <img src="/images/car.jpg" className="rounded-2xl w-full object-cover aspect-4/3" />
             </div>
 
           </div>
