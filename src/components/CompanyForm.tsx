@@ -2,7 +2,6 @@ import { useForm } from "react-hook-form";
 import { motion } from "motion/react";
 import { useState } from "react";
 
-
 interface CompanyFormProps {
   onClose: () => void;
 }
@@ -17,53 +16,54 @@ interface CompanyFormData {
   address: string;
   postalCode: string;
   city: string;
-  fleet: string[];        // checkboxes
+  fleet: string[]; // checkboxes
   hasId: "Yes" | "No";
   applyId: "Yes" | "No";
-  platforms: string[];    // conditional checkboxes
+  platforms: string[]; // conditional checkboxes
   principalCae?: string; // optional
   secondaryCae?: string; // optional
 }
 
 export function CompanyForm({ onClose }: CompanyFormProps) {
   const {
-  register,
-  handleSubmit,
-  watch,
-  formState: { errors, isSubmitting },
-} = useForm<CompanyFormData>({
-  defaultValues: {
-    fleet: [],
-    platforms: [],
-  },
-});
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors, isSubmitting },
+  } = useForm<CompanyFormData>({
+    defaultValues: {
+      fleet: [],
+      platforms: [],
+    },
+  });
   const [hasId, setHasId] = useState<string | null>(null);
   const [applyId, setApplyId] = useState<string | null>(null);
 
   const onSubmit = async (data: CompanyFormData) => {
-  try {
-    const response = await fetch("http://localhost:5000/contact", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    });
+    try {
+      const response = await fetch("http://localhost:5000/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
 
-    const result = await response.json();
+      const result = await response.json();
 
-    if (result.success) {
-      alert("Form submitted successfully!");
-      onClose();
-    } else {
-      alert("Error");
+      if (result.success) {
+        alert("Form submitted successfully!");
+        onClose();
+      } else {
+        alert("Error");
+      }
+    } catch (error) {
+      alert("Something went wrong");
     }
-  } catch (error) {
-    alert("Something went wrong");
-  }
-};
+  };
   return (
-    <form onSubmit={handleSubmit(onSubmit)}
+    <form
+      onSubmit={handleSubmit(onSubmit)}
       className="space-y-5 p-6 bg-white rounded-2xl shadow-lg"
     >
       {/* ================= Name & Surname ================= */}
@@ -251,86 +251,96 @@ export function CompanyForm({ onClose }: CompanyFormProps) {
         </div>
       </div>
 
-     {/* ================= Fleet Selection ================= */}
-<div>
-  <label className="label">Fleet Selection</label>
-  <div className="flex flex-wrap gap-4 mt-2">
-    {["Uber Eats", "Uber Drive", "Bolt Drive", "Bolt Food"].map(
-      (item) => (
-        <label key={item} className="flex items-center gap-2">
-          <input
-            type="checkbox"
-            value={item}
-            {...register("fleet", {
-              required: "Please select at least one fleet",
-            })}
-            className="w-4 h-4 text-blue-600"
-          />
-          {item}
-        </label>
-      )
-    )}
-  </div>
-  {/* Error message */}
-  {errors.fleet && (
-    <p className="text-red-500 mt-1 text-sm">{errors.fleet.message}</p>
-  )}
-</div>
+      {/* ================= Fleet Selection ================= */}
+      <div>
+        <label className="label">Fleet Selection</label>
+        <div className="flex flex-wrap gap-4 mt-2">
+          {["Uber Eats", "Uber Drive", "Bolt Drive", "Bolt Food"].map(
+            (item) => (
+              <label key={item} className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  value={item}
+                  {...register("fleet", {
+                    required: "Please select at least one fleet",
+                  })}
+                  className="w-4 h-4 text-blue-600"
+                />
+                {item}
+              </label>
+            ),
+          )}
+        </div>
+        {/* Error message */}
+        {errors.fleet && (
+          <p className="text-red-500 mt-1 text-sm">{errors.fleet.message}</p>
+        )}
+      </div>
       {/* ================= Uber/Bolt ID & Apply ID Side by Side ================= */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
         {/* Do you have Uber/Bolt ID */}
         <div>
-  <label className="label">Do you have Uber/Bolt ID?</label>
-  <div className="grid grid-cols-2 gap-4 mt-2">
-    <label className="flex items-center gap-2 cursor-pointer">
-      <input
-        type="radio"
-        value="Yes"
-        {...register("hasId", { required: "Please select Yes or No" })}
-        onClick={() => setHasId("Yes")}
-      /> 
-      Yes
-    </label>
-    <label className="flex items-center gap-2 cursor-pointer">
-      <input
-        type="radio"
-        value="No"
-        {...register("hasId", { required: "Please select Yes or No" })}
-        onClick={() => setHasId("No")}
-      /> 
-      No
-    </label>
-  </div>
-  {errors.hasId && (
-    <p className="text-red-500 text-sm mt-1">{errors.hasId.message}</p>
-  )}
-</div>
+          <label className="label">Do you have Uber/Bolt ID?</label>
+          <div className="grid grid-cols-2 gap-4 mt-2">
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="radio"
+                value="Yes"
+                {...register("hasId", { required: "Please select Yes or No" })}
+                onClick={() => setHasId("Yes")}
+              />
+              Yes
+            </label>
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="radio"
+                value="No"
+                {...register("hasId", { required: "Please select Yes or No" })}
+                onClick={() => setHasId("No")}
+              />
+              No
+            </label>
+          </div>
+          {errors.hasId && (
+            <p className="text-red-500 text-sm mt-1">{errors.hasId.message}</p>
+          )}
+        </div>
 
         {/* Do you want to apply Uber/Bolt ID */}
-        <div>
-  <label className="label">Do you want to apply Uber/Bolt ID?</label>
-  <div className="grid grid-cols-2 gap-4 mt-2">
-    <label className="flex items-center gap-2 cursor-pointer">
-      <input
-        type="radio"
-        value="Yes"
-        {...register("applyId", { required: "Please select Yes or No" })}
-      />
-      Yes
-    </label>
-    <label className="flex items-center gap-2 cursor-pointer">
-      <input
-        type="radio"
-        value="No"
-        {...register("applyId", { required: "Please select Yes or No" })}
-      />
-      No
-    </label>
+        {hasId !== "Yes" && (
+  <div>
+    <label className="label">Do you want to apply Uber/Bolt ID?</label>
+    <div className="grid grid-cols-2 gap-4 mt-2">
+      <label className="flex items-center gap-2 cursor-pointer">
+        <input
+          type="radio"
+          value="Yes"
+          {...register("applyId", {
+            required: "Please select Yes or No",
+            validate: (value) =>
+              value === "Yes" || hasId === "Yes" || "Select at least one Yes",
+          })}
+        />
+        Yes
+      </label>
+      <label className="flex items-center gap-2 cursor-pointer">
+        <input
+          type="radio"
+          value="No"
+          {...register("applyId", {
+            required: "Please select Yes or No",
+            validate: (value) =>
+              value === "Yes" || hasId === "Yes" || "Select at least one Yes",
+          })}
+        />
+        No
+      </label>
+    </div>
+    {errors.applyId && (
+      <p className="text-red-500 text-sm mt-1">{errors.applyId.message}</p>
+    )}
   </div>
-  {errors.applyId && (
-    <p className="text-red-500 text-sm mt-1">{errors.applyId.message}</p>
-  )}
-</div>
+)}
       </div>
 
       {/* ================= Conditional Platforms ================= */}
@@ -388,8 +398,6 @@ export function CompanyForm({ onClose }: CompanyFormProps) {
       >
         {isSubmitting ? "Submitting..." : "Submit"}
       </motion.button>
-
-      
     </form>
   );
 }
