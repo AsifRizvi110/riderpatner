@@ -251,67 +251,86 @@ export function CompanyForm({ onClose }: CompanyFormProps) {
         </div>
       </div>
 
-      {/* ================= Fleet Selection ================= */}
-      <div>
-        <label className="label">Fleet Selection</label>
-        <div className="flex flex-wrap gap-4 mt-2">
-          {["Uber Eats", "Uber Drive", "Bolt Drive", "Bolt Food"].map(
-            (item) => (
-              <label key={item} className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  value={item}
-                  {...register("fleet")}
-                  className="w-4 h-4 text-blue-600"
-                />
-                {item}
-              </label>
-            ),
-          )}
-        </div>
-      </div>
-
+     {/* ================= Fleet Selection ================= */}
+<div>
+  <label className="label">Fleet Selection</label>
+  <div className="flex flex-wrap gap-4 mt-2">
+    {["Uber Eats", "Uber Drive", "Bolt Drive", "Bolt Food"].map(
+      (item) => (
+        <label key={item} className="flex items-center gap-2">
+          <input
+            type="checkbox"
+            value={item}
+            {...register("fleet", {
+              required: "Please select at least one fleet",
+            })}
+            className="w-4 h-4 text-blue-600"
+          />
+          {item}
+        </label>
+      )
+    )}
+  </div>
+  {/* Error message */}
+  {errors.fleet && (
+    <p className="text-red-500 mt-1 text-sm">{errors.fleet.message}</p>
+  )}
+</div>
       {/* ================= Uber/Bolt ID & Apply ID Side by Side ================= */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
         {/* Do you have Uber/Bolt ID */}
         <div>
-          <label className="label">Do you have Uber/Bolt ID?</label>
-          <div className="grid grid-cols-2 gap-4 mt-2">
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input
-                type="radio"
-                value="Yes"
-                {...register("hasId")}
-                onClick={() => setHasId("Yes")}
-              />
-              Yes
-            </label>
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input
-                type="radio"
-                value="No"
-                {...register("hasId")}
-                onClick={() => setHasId("No")}
-              />
-              No
-            </label>
-          </div>
-        </div>
+  <label className="label">Do you have Uber/Bolt ID?</label>
+  <div className="grid grid-cols-2 gap-4 mt-2">
+    <label className="flex items-center gap-2 cursor-pointer">
+      <input
+        type="radio"
+        value="Yes"
+        {...register("hasId", { required: "Please select Yes or No" })}
+        onClick={() => setHasId("Yes")}
+      /> 
+      Yes
+    </label>
+    <label className="flex items-center gap-2 cursor-pointer">
+      <input
+        type="radio"
+        value="No"
+        {...register("hasId", { required: "Please select Yes or No" })}
+        onClick={() => setHasId("No")}
+      /> 
+      No
+    </label>
+  </div>
+  {errors.hasId && (
+    <p className="text-red-500 text-sm mt-1">{errors.hasId.message}</p>
+  )}
+</div>
 
         {/* Do you want to apply Uber/Bolt ID */}
         <div>
-          <label className="label">Do you want to apply Uber/Bolt ID?</label>
-          <div className="grid grid-cols-2 gap-4 mt-2">
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input type="radio" value="Yes" {...register("applyId")} />
-              Yes
-            </label>
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input type="radio" value="No" {...register("applyId")} />
-              No
-            </label>
-          </div>
-        </div>
+  <label className="label">Do you want to apply Uber/Bolt ID?</label>
+  <div className="grid grid-cols-2 gap-4 mt-2">
+    <label className="flex items-center gap-2 cursor-pointer">
+      <input
+        type="radio"
+        value="Yes"
+        {...register("applyId", { required: "Please select Yes or No" })}
+      />
+      Yes
+    </label>
+    <label className="flex items-center gap-2 cursor-pointer">
+      <input
+        type="radio"
+        value="No"
+        {...register("applyId", { required: "Please select Yes or No" })}
+      />
+      No
+    </label>
+  </div>
+  {errors.applyId && (
+    <p className="text-red-500 text-sm mt-1">{errors.applyId.message}</p>
+  )}
+</div>
       </div>
 
       {/* ================= Conditional Platforms ================= */}
