@@ -1,199 +1,376 @@
-import { useForm } from 'react-hook-form';
-import { motion } from 'motion/react';
-import { useTranslation } from 'react-i18next';
-import { useState } from 'react';
-// import { ShieldCheck } from 'your-icon-library'; // agar needed ho
-import { ChangeEvent } from 'react';
+import { useForm } from "react-hook-form";
+import { motion } from "motion/react";
+import { useState } from "react";
+
 
 interface CompanyFormProps {
   onClose: () => void;
 }
 
-export function CompanyForm({ onClose }: CompanyFormProps) {
-  const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm();
-  const { t } = useTranslation();
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
+interface CompanyFormData {
+  name: string;
+  surname: string;
+  email: string;
+  mobile: string;
+  whatsapp: string;
+  nif: string;
+  address: string;
+  postalCode: string;
+  city: string;
+  fleet: string[];        // checkboxes
+  hasId: "Yes" | "No";
+  applyId: "Yes" | "No";
+  platforms: string[];    // conditional checkboxes
+  principalCae?: string; // optional
+  secondaryCae?: string; // optional
+}
 
- const onSubmit = async (data: any) => {
+export function CompanyForm({ onClose }: CompanyFormProps) {
+  const {
+  register,
+  handleSubmit,
+  watch,
+  formState: { errors, isSubmitting },
+} = useForm<CompanyFormData>({
+  defaultValues: {
+    fleet: [],
+    platforms: [],
+  },
+});
+  const [hasId, setHasId] = useState<string | null>(null);
+  const [applyId, setApplyId] = useState<string | null>(null);
+
+  const onSubmit = async (data: CompanyFormData) => {
   try {
-    const response = await fetch("https://script.google.com/macros/s/AKfycbx49Adp1ot8rGHePGkmgNm0XIRuOrShBBkjZ-WtLUvgQv_gOamr-zWIohcBO0f5edz7bQ/exec", {
+    const response = await fetch("http://localhost:5000/contact", {
       method: "POST",
-      mode: "no-cors", // 👈 IMPORTANT
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify(data)
+      body: JSON.stringify(data),
     });
 
-    // ⚠️ no-cors me response read nahi hota
-    alert("Form submitted successfully!");
-    onClose();
+    const result = await response.json();
 
+    if (result.success) {
+      alert("Form submitted successfully!");
+      onClose();
+    } else {
+      alert("Error");
+    }
   } catch (error) {
-    console.error("Error:", error);
     alert("Something went wrong");
   }
 };
-
-
-  const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
-  const file = e.target.files?.[0];
-  if (file) {
-    setImagePreview(URL.createObjectURL(file));
-  } else {
-    setImagePreview(null);
-  }
-};
-
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-
-      {/* ================= Company Image Upload ================= */}
-      {/* <div>
-        <label className="block text-sm font-medium text-slate-700 mb-2">{t('form.companyImage')}</label>
-        
-        {imagePreview && (
-          <img 
-            src={imagePreview} 
-            alt="Company Preview" 
-            className="w-32 h-32 object-cover rounded-xl mb-3 border border-slate-200" 
-          />
-        )}
-
-        <input
-          type="file"
-          accept="image/*"
-          {...register('companyImage')}
-          onChange={handleImageChange}
-          className="w-full text-sm text-slate-600 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-600 file:text-white hover:file:bg-blue-500 transition-all"
-        />
-      </div> */}
-
-      {/* ================= Name & Company Name ================= */}
+    <form onSubmit={handleSubmit(onSubmit)}
+      className="space-y-5 p-6 bg-white rounded-2xl shadow-lg"
+    >
+      {/* ================= Name & Surname ================= */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">{t('form.name')}</label>
-          <input {...register('name', { required: true })} className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all" placeholder={t('form.namePlaceholder')} />
-          {errors.name && <span className="text-red-500 text-xs mt-1">{t('form.required')}</span>}
+          <label className="label">Name</label>
+          <input
+            {...register("name", {
+              required: "Name is required",
+              pattern: {
+                value: /^[A-Za-z\s]+$/, // sirf letters aur spaces
+                message: "Only letters allowed",
+              },
+            })}
+            className="input"
+            placeholder="Enter your name"
+          />
+          {errors.name && (
+            <span className="text-red-500 text-xs mt-1">
+              {errors.name.message}
+            </span>
+          )}
         </div>
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">{t('form.companyName')}</label>
-          <input {...register('companyName', { required: true })} className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all" placeholder={t('form.companyNamePlaceholder')} />
-          {errors.companyName && <span className="text-red-500 text-xs mt-1">{t('form.required')}</span>}
+          <label className="label">Surname</label>
+
+          <input
+            placeholder="Last Name"
+            {...register("surname", {
+              required: "Required", // agar blank submit hua
+              pattern: {
+                value: /^[A-Za-z\s]+$/, // sirf letters aur spaces allow
+                message: "Only letters allowed", // error message
+              },
+            })}
+            className="input"
+          />
+          {errors.surname && (
+            <span className="text-red-500 text-xs mt-1">
+              {errors.surname.message}
+            </span>
+          )}
         </div>
       </div>
 
       {/* ================= Email & Mobile ================= */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">{t('form.email')}</label>
-          <input type="email" {...register('email', { required: true })} className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all" placeholder={t('form.emailPlaceholder')} />
-          {errors.email && <span className="text-red-500 text-xs mt-1">{t('form.required')}</span>}
+          <label className="label">Email</label>
+          <input
+            placeholder="Email"
+            type="email"
+            {...register("email", { required: true })}
+            className="input"
+          />
+          {errors.email && (
+            <span className="text-red-500 text-xs mt-1">Required</span>
+          )}
         </div>
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">{t('form.mobile')}</label>
-          <input type="tel" {...register('mobile', { required: true })} className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all" placeholder={t('form.mobilePlaceholder')} />
-          {errors.mobile && <span className="text-red-500 text-xs mt-1">{t('form.required')}</span>}
+          <label className="label">Mobile Number</label>
+          <input
+            placeholder="Mobile Number"
+            type="tel"
+            {...register("mobile", {
+              required: "Required",
+              pattern: {
+                value: /^[0-9]+$/, // sirf digits allow
+                message: "Only numbers allowed",
+              },
+              minLength: {
+                value: 9, // optional: minimum 9 digits
+                message: "Too short",
+              },
+              maxLength: {
+                value: 15, // optional: maximum 15 digits
+                message: "Too long",
+              },
+            })}
+            className="input"
+          />
+          {errors.mobile && (
+            <span className="text-red-500 text-xs mt-1">
+              {errors.mobile.message}
+            </span>
+          )}
         </div>
       </div>
 
       {/* ================= WhatsApp & NIF ================= */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">{t('form.whatsapp')}</label>
-          <input type="tel" {...register('whatsapp', { required: true })} className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all" placeholder={t('form.whatsappPlaceholder')} />
+          <label className="label">WhatsApp Number</label>
+          <input
+            placeholder="WhatsApp Number"
+            type="tel"
+            {...register("whatsapp", {
+              required: "Required",
+              pattern: {
+                value: /^[0-9]+$/, // sirf digits allow
+                message: "Only numbers allowed",
+              },
+              minLength: {
+                value: 9, // optional: minimum 9 digits
+                message: "Too short",
+              },
+              maxLength: {
+                value: 15, // optional: maximum 15 digits
+                message: "Too long",
+              },
+            })}
+            className="input"
+          />
+          {errors.whatsapp && (
+            <span className="text-red-500 text-xs mt-1">
+              {errors.whatsapp.message}
+            </span>
+          )}
         </div>
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">{t('form.nif')}</label>
-          <input {...register('nif', { required: true })} className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all" placeholder={t('form.nifPlaceholder')} />
-          {errors.nif && <span className="text-red-500 text-xs mt-1">{t('form.required')}</span>}
+          <label className="label">NIF Number</label>
+          <input
+            placeholder="NIF Number"
+            type="text"
+            {...register("nif", {
+              required: "Required",
+              pattern: {
+                value: /^[0-9]{9}$/, // sirf 9 digits allow
+                message: "Must be exactly 9 numbers",
+              },
+              minLength: {
+                value: 9,
+                message: "Must be exactly 9 numbers",
+              },
+              maxLength: {
+                value: 9,
+                message: "Must be exactly 9 numbers",
+              },
+            })}
+            className="input"
+          />
+          {errors.nif && (
+            <span className="text-red-500 text-xs mt-1">
+              {errors.nif.message}
+            </span>
+          )}
         </div>
       </div>
 
-      {/* ================= Address ================= */}
+      {/* ================= Address → Postal Code → City ================= */}
       <div>
-        <label className="block text-sm font-medium text-slate-700 mb-1">{t('form.address')}</label>
-        <input {...register('address', { required: true })} className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all" placeholder={t('form.addressPlaceholder')} />
+        <label className="label">Address</label>
+        <input
+          placeholder="Address"
+          {...register("address", { required: true })}
+          className="input"
+        />
+        {errors.address && (
+          <span className="text-red-500 text-xs mt-1">Required</span>
+        )}
       </div>
 
-      {/* ================= ID Type & Number ================= */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">{t('form.idType')}</label>
-          <select {...register('idType', { required: true })} className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all bg-white">
-            <option value="">{t('form.idTypeSelect')}</option>
-            <option value="Passport">{t('form.passport')}</option>
-            <option value="Residence Card">{t('form.residenceCard')}</option>
-            <option value="Cartão de Cidadão">{t('form.cartaoCidadao')}</option>
-          </select>
-          {errors.idType && <span className="text-red-500 text-xs mt-1">{t('form.required')}</span>}
+          <label className="label">Postal Code</label>
+          <input
+            placeholder="Postal Code"
+            {...register("postalCode", { required: true })}
+            className="input"
+          />
+          {errors.postalCode && (
+            <span className="text-red-500 text-xs mt-1">Required</span>
+          )}
         </div>
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">{t('form.idNumber')}</label>
-          <input {...register('idNumber', { required: true })} className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all" placeholder={t('form.idNumberPlaceholder')} />
-          {errors.idNumber && <span className="text-red-500 text-xs mt-1">{t('form.required')}</span>}
+          <label className="label">City</label>
+          <input
+            placeholder="City"
+            {...register("city", { required: true })}
+            className="input"
+          />
+          {errors.city && (
+            <span className="text-red-500 text-xs mt-1">Required</span>
+          )}
         </div>
       </div>
 
-      {/* ================= IBAN ================= */}
+      {/* ================= Fleet Selection ================= */}
       <div>
-        <label className="block text-sm font-medium text-slate-700 mb-1">{t('form.iban')}</label>
-        <input {...register('iban', { required: true })} className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all" placeholder={t('form.ibanPlaceholder')} />
+        <label className="label">Fleet Selection</label>
+        <div className="flex flex-wrap gap-4 mt-2">
+          {["Uber Eats", "Uber Drive", "Bolt Drive", "Bolt Food"].map(
+            (item) => (
+              <label key={item} className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  value={item}
+                  {...register("fleet")}
+                  className="w-4 h-4 text-blue-600"
+                />
+                {item}
+              </label>
+            ),
+          )}
+        </div>
       </div>
 
-      {/* ================= Fleet & Self-Employed ================= */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+      {/* ================= Uber/Bolt ID & Apply ID Side by Side ================= */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+        {/* Do you have Uber/Bolt ID */}
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-2">{t('form.fleet')}</label>
-          <div className="flex gap-4">
+          <label className="label">Do you have Uber/Bolt ID?</label>
+          <div className="grid grid-cols-2 gap-4 mt-2">
             <label className="flex items-center gap-2 cursor-pointer">
-              <input type="checkbox" value="Uber Eats" {...register('fleet')} className="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500" />
-              <span className="text-sm text-slate-700">Uber Eats</span>
+              <input
+                type="radio"
+                value="Yes"
+                {...register("hasId")}
+                onClick={() => setHasId("Yes")}
+              />
+              Yes
             </label>
             <label className="flex items-center gap-2 cursor-pointer">
-              <input type="checkbox" value="Uber Drive" {...register('fleet')} className="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500" />
-              <span className="text-sm text-slate-700">Uber Drive</span>
+              <input
+                type="radio"
+                value="No"
+                {...register("hasId")}
+                onClick={() => setHasId("No")}
+              />
+              No
             </label>
           </div>
         </div>
+
+        {/* Do you want to apply Uber/Bolt ID */}
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-2">{t('form.selfEmployed')}</label>
-          <div className="flex gap-4">
+          <label className="label">Do you want to apply Uber/Bolt ID?</label>
+          <div className="grid grid-cols-2 gap-4 mt-2">
             <label className="flex items-center gap-2 cursor-pointer">
-              <input type="radio" value="Yes" {...register('selfEmployed', { required: true })} className="w-4 h-4 text-blue-600 border-slate-300 focus:ring-blue-500" />
-              <span className="text-sm text-slate-700">{t('form.yes')}</span>
+              <input type="radio" value="Yes" {...register("applyId")} />
+              Yes
             </label>
             <label className="flex items-center gap-2 cursor-pointer">
-              <input type="radio" value="No" {...register('selfEmployed', { required: true })} className="w-4 h-4 text-blue-600 border-slate-300 focus:ring-blue-500" />
-              <span className="text-sm text-slate-700">{t('form.no')}</span>
+              <input type="radio" value="No" {...register("applyId")} />
+              No
             </label>
           </div>
-          {errors.selfEmployed && <span className="text-red-500 text-xs mt-1 block">{t('form.required')}</span>}
         </div>
       </div>
 
-      {/* ================= Principal & Secondary CAE ================= */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+      {/* ================= Conditional Platforms ================= */}
+      {(hasId === "Yes" || watch("applyId") === "Yes") && (
+        <div className="mt-4">
+          <label className="label">Select Platform</label>
+          <div className="flex flex-wrap gap-4 mt-2">
+            {["Uber Eats", "Uber Drive", "Bolt Drive", "Bolt Food"].map(
+              (item) => (
+                <label
+                  key={item}
+                  className="flex items-center gap-2 cursor-pointer"
+                >
+                  <input
+                    type="checkbox"
+                    value={item}
+                    {...register("platforms")}
+                    className="w-4 h-4 text-blue-600"
+                  />
+                  {item}
+                </label>
+              ),
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* ================= Self-Employed & CAE Side by Side ================= */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">{t('form.principalCae')}</label>
-          <input {...register('principalCae', { required: true })} className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all" placeholder={t('form.principalCaePlaceholder')} />
+          <label className="label">Principal CAE / CIRS</label>
+          <input
+            {...register("principalCae")}
+            className="input"
+            placeholder="Optional"
+          />
         </div>
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">{t('form.secondaryCae')}</label>
-          <input {...register('secondaryCae')} className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all" placeholder={t('form.secondaryCaePlaceholder')} />
+          <label className="label">Secondary CAE / CIRS</label>
+          <input
+            {...register("secondaryCae")}
+            className="input"
+            placeholder="Optional"
+          />
         </div>
       </div>
 
-      {/* ================= Submit Button ================= */}
+      {/* ================= Submit ================= */}
       <motion.button
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
         disabled={isSubmitting}
         type="submit"
-        className="w-full py-3.5 mt-4 bg-linear-to-tr from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-xl shadow-lg shadow-blue-500/30 transition-all disabled:opacity-70 disabled:cursor-not-allowed"
+        className="w-full py-3 bg-linear-to-r from-blue-600 to-indigo-600 text-white font-semibold rounded-xl shadow-lg mt-4"
       >
-        {isSubmitting ? t('form.submitting') : t('form.submit')}
+        {isSubmitting ? "Submitting..." : "Submit"}
       </motion.button>
+
+      
     </form>
   );
 }

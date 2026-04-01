@@ -27,8 +27,12 @@ const resources = {
         pathTitle: "Choose Your Path",
         pathSubtitle: "Whether you prefer delivering food or driving passengers, we have opportunities for you. Join as an individual worker or register your entire company fleet.",
         eatsTitle: "Uber Eats Delivery",
+        eatsTitle2: "Bolt Drive",
+        eatsDesc2: "Drive passengers to their destinations safely and efficiently using the Bolt Drive app with your own car.",
         eatsDesc: "Deliver food from local restaurants to hungry customers using your bike, scooter, or car.",
         driveTitle: "Uber Drive",
+        driveTitle2: "Bolt Food",
+        driveDesc2: "Pick up orders from nearby restaurants and deliver them to customers quickly using your bike, scooter, or car with the Bolt Food app..",
         driveDesc: "Help people move around the city. Drive on your own schedule and earn competitive fares."
       },
       about: {

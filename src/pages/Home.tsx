@@ -166,6 +166,28 @@ export function Home() {
                     <p className="text-sm text-gray-400">{t('home.driveDesc')}</p>
                   </div>
                 </div>
+                
+
+                
+                
+                <div className="flex gap-4">
+                  <Bike />
+                  <div>
+                    <h4 className="font-semibold">{t('home.driveTitle2')}</h4>
+                    <p className="text-sm text-gray-400">{t('home.driveDesc2')}</p>
+
+                  </div>
+                </div>
+                 <div className="flex gap-4">
+                  <Car />
+                  <div>
+                    <h4 className="font-semibold">{t('home.eatsTitle2')}</h4>
+                    <p className="text-sm text-gray-400">{t('home.eatsDesc')}</p>
+                  </div>
+                </div>  
+                
+
+
 
               </div>
             </div>
